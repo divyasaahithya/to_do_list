@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>divya's To-Do List</title>
+    <style>
+        body {
+            font-family:Georgia, 'Times New Roman', Times, serif;
+            background-image: url('todolistimage.jpg'); 
+            background-size: cover;
+            font-weight: bold;
+            font-size: 24px;
+           }
+        #todo-list {
+            width: 300px;
+            margin: 0 auto;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #ddd;
+            margin: 5px 0;
+            padding: 5px;
+        }
+        button {
+            background-color:burlywood;
+            color:black;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color:bisque;
+        }
+        input[type="text"] {
+            width: 70%;
+            padding: 5px;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="todo-list">
+        <h1>TO DO LIST</h1>
+        <input type="text" id="task" placeholder="Add tasks">
+        <button onclick="addTask()">+</button>
+        <ul id="tasks"></ul>
+    </div>
+
+    <script>
+        const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        function displayTasks() {
+            const tasksList = document.getElementById('tasks');
+            tasksList.innerHTML = '';
+
+            tasks.forEach((task, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <input type="text" value="${task}" readonly>
+                    <button onclick="editTask(${index})">EDIT</button>
+                    <button onclick="deleteTask(${index})">DELETE</button>
+                `;
+                tasksList.appendChild(li);
+            });
+        }
+        function addTask() {
+            const taskInput = document.getElementById('task');
+            const taskValue = taskInput.value.trim();
+            if (taskValue !== '') {
+                tasks.push(taskValue);
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+                taskInput.value = '';
+                displayTasks();
+            }
+        }
+        function editTask(index) {
+            const tasksList = document.getElementById('tasks');
+            const li = tasksList.children[index];
+            const input = li.querySelector('input');
+            input.removeAttribute('readonly');
+            input.focus();
+            input.addEventListener('keydown', function (event) {
+                if (event.key === 'Enter') {
+                    tasks[index] = input.value;
+                    localStorage.setItem('tasks', JSON.stringify(tasks));
+                    input.setAttribute('readonly', true);
+                }
+            });
+        }
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            displayTasks();
+        }
+        displayTasks();
+    </script>
+</body>
+</html>
